@@ -1,0 +1,161 @@
+<!-- CORPO DO NOSSO COMPONENTE -->
+<div class="container mt-4">
+  <h2>Lista de Finanças
+    <button class="btn btn-primary btn-arrendondamento"
+    (click)="openModal();form.reset()">
+      <i class="fas fa-plus"></i>
+      Novo Valor
+    </button>
+  </h2>
+  <table class="table table-hover">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Valor</th>
+      <th scope="col">Data</th>
+      <th scope="col">Status</th>
+      <th>Ações <i class="fas fa-cog"></i></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let t of valores; let i = index" [ngClass]="{'status-entrada': t.status === 'Entrada', 'status-saida': t.status === 'Saída'}"> <!--deixar vermelho ou verde dependendo se é saída ou entrada-->
+      <th scope="row"> {{ i + 1}}</th>
+      <td>{{ "R$ " + t.valor }}</td>
+      <td>{{ t.data | date: 'dd/MM/yyyy'}}</td>
+      <td>{{ t.status }}</td>
+      <td>
+        <!--BOTÃO DE DELETAR-->
+        <button class="btn btn-danger rounded-circle" (click)="excluirValor(t.id)">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <!-- BOTÃO DE EDITAR -->
+        - <button class="btn btn-warning rounded-circle" (click)="carregarDadosValor(t)">
+            <i class="fas fa-edit"></i>
+          </button>
+        <!-- BOTÃO DE VISUALIZAR -->
+        - <button type="button" class="btn btn-primary rounded-circle"
+                  data-toggle="modal" data-target="#valoresModal" (click)="setValorAtual(t)">
+        <i class="fas fa-eye"></i>
+      </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="false" class="d-flex justify-content-center">
+  <i class="fas fa-spinner fa-spin fa-3x fa-fw"></i>
+  <h3>CARREGANDO...</h3>
+</div>
+
+<!-- MODAL DE CADASTRO/EDIÇÃO -->
+<div class="modal" tabindex="-1" id="add-valor">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <ng-container *ngIf="form.value.id > 0; else novoValor">
+            Editar valor
+          </ng-container>
+          <ng-template #novoValor>
+            Adicionar Valor
+          </ng-template>
+        </h5>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="submitForm()">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="mb-3 col-md-12">
+              <label class="form-label">Valor</label>
+              <input type="number" class="form-control" formControlName="Valor" min="0">
+              <div class="text-danger" *ngIf="isCampoValido('Valor')">
+                Campo Obrigatório
+              </div>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label class="form-label">Data</label>
+              <input type="date" class="form-control" formControlName="dataValor">
+              <div class="text-danger" *ngIf="isCampoValido('dataValor')">
+                Campo Obrigatório
+              </div>
+            </div>
+            <div class="mb-3 col-md-6">
+              <label>Status</label>
+              <select class="form-control" formControlName="statusValor">
+                <option value="Entrada">Entrada</option>
+                <option value="Saída">Saída</option>
+              </select>
+              <div class="text-danger" *ngIf="isCampoValido('statusValor')">
+                Campo Obrigatório
+              </div>
+            </div>
+            <div class="mb-3 col-md-12">
+              <label class="form-check-label">
+                Descrição Valor
+              </label>
+              <textarea class="form-control" rows="3" formControlName="descricaoValor"></textarea>
+              <div class="text-danger" *ngIf="isCampoValido('descricaoValor')">
+                Campo Obrigatório
+              </div>
+            </div>
+            <div class="mb-3 col-md-12">
+              <hr>
+              <input type="file" accept="image/*" (change)="onFileChange($event)">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-bs-dismiss="modal" (click)="closeModal()">Fechar</button>
+          <button class="btn btn-success" type="submit">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL DE VISUALIZAR VALORES -->
+<div class="modal fade" id="valoresModal" tabindex="-1" role="dialog"
+     aria-labelledby="visualizar" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="visualizar">Detalhes do Valor</h5>
+        <button class="close" type="button" data-dismiss="modal" arial-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="valorVisualizar">
+          <strong>Valor:</strong> {{ "R$ " + valorVisualizar?.valor }}
+        </p>
+        <p *ngIf="valorVisualizar">
+          <strong>Descrição:</strong> {{ valorVisualizar?.descricao }}
+        </p>
+        <p *ngIf="valorVisualizar">
+          <strong>Status:</strong> {{ valorVisualizar?.status }}
+        </p>
+        <p *ngIf="valorVisualizar">
+          <strong>Data:</strong> {{ valorVisualizar?.data | date: 'dd/MM/yyyy' }}
+        </p>
+        <img *ngIf="valorVisualizar?.imagem"
+             [src]="valorVisualizar?.imagem"
+             alt="Imagem da tarefa"
+             style="max-width: 100%; max-height: 300px; height: auto;">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .status-entrada {
+    color: green;
+  }
+
+  .status-saida {
+    color: red;
+  }
+</style>

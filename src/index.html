@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sistema Gerenciador Financeiro</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/images/LogoControleFinanceiroPessoal.png">
+</head>
+<body>
+  <app-root></app-root>
+
+  <script> //script de java para ficar alternando entre os títulos da página
+    (function() {
+      var titles = ["Sistema Gerenciador Financeiro", "Bem Vindo!"];
+      var currentIndex = 0;
+
+      setInterval(function() {
+        document.title = titles[currentIndex];
+        currentIndex = (currentIndex + 1) % titles.length;
+      }, 2000); // milissegundos
+    })();
+  </script>
+</body>
+</html>
